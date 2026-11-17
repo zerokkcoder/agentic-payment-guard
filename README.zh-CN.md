@@ -77,7 +77,18 @@ cast wallet address --account aevum-deployer
 QUOTE_SIGNER=<第二个测试私钥对应的地址> make deploy-all-aevum ACCOUNT=aevum-deployer
 ```
 
-把输出地址填入 `web/.env.local` 和 `agent/.env`。完整环境变量表和浏览器验证器失效的应对见 [docs/deployment.zh-CN.md](./docs/deployment.zh-CN.md)。
+### 已部署地址（Aevum 测试网，chain 44005）
+
+| 合约 | 地址 |
+|---|---|
+| PaymentGuard | `0xBB8984Cdd7eFa0502E1FEcDEDb2e07b3080436c3` |
+| AgentIdentityRegistry | `0xAc1E8054945A73744014c4f257e49AD45E10d17F` |
+| ReputationRegistry | `0xEE7029AAAaFdB8108e2fACC8F0cd2704266Ee2E7` |
+| ValidationRegistry | `0x1348E3B74C1E2b09fa44d86f7d1Aad78179Cf09f` |
+| 部署区块 | `3383476` |
+| 线上 Demo | https://agentic-payment-guard.vercel.app/ |
+
+把这些地址填入 `web/.env.local` 和 `agent/.env`。完整环境变量表和浏览器验证器失效的应对见 [docs/deployment.zh-CN.md](./docs/deployment.zh-CN.md)。
 
 ### Vercel 一键部署
 

@@ -20,7 +20,7 @@
   "registrations": [
     {
       "agentId": 1,
-      "agentRegistry": "eip155:44005:TBD"
+      "agentRegistry": "eip155:44005:0xAc1E8054945A73744014c4f257e49AD45E10d17F"
     }
   ],
   "supportedTrust": ["reputation", "validation"]

@@ -79,7 +79,18 @@ cast wallet address --account aevum-deployer
 QUOTE_SIGNER=<address of a second test key> make deploy-all-aevum ACCOUNT=aevum-deployer
 ```
 
-Copy the printed addresses into `web/.env.local` and `agent/.env`. See [docs/deployment.md](./docs/deployment.md) for the full variable table and the verifier workaround.
+### Live deployment (Aevum testnet, chain 44005)
+
+| Contract | Address |
+|---|---|
+| PaymentGuard | `0xBB8984Cdd7eFa0502E1FEcDEDb2e07b3080436c3` |
+| AgentIdentityRegistry | `0xAc1E8054945A73744014c4f257e49AD45E10d17F` |
+| ReputationRegistry | `0xEE7029AAAaFdB8108e2fACC8F0cd2704266Ee2E7` |
+| ValidationRegistry | `0x1348E3B74C1E2b09fa44d86f7d1Aad78179Cf09f` |
+| Deployment block | `3383476` |
+| Live UI | https://agentic-payment-guard.vercel.app/ |
+
+Copy these into `web/.env.local` and `agent/.env`. See [docs/deployment.md](./docs/deployment.md) for the full variable table and the verifier workaround.
 
 ### One-click Vercel deployment
 

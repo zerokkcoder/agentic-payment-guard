@@ -30,11 +30,13 @@ The script deploys `AgentIdentityRegistry`, `ReputationRegistry`, `ValidationReg
 
 | Contract | Aevum testnet | Fork (440050) | Local (31337) |
 |---|---|---|---|
-| PaymentGuard | `TBD` | `TBD` | `TBD` |
-| AgentIdentityRegistry | `TBD` | `TBD` | `TBD` |
-| ReputationRegistry | `TBD` | `TBD` | `TBD` |
-| ValidationRegistry | `TBD` | `TBD` | `TBD` |
+| PaymentGuard | `0xBB8984Cdd7eFa0502E1FEcDEDb2e07b3080436c3` | redeploy with `make deploy-all-fork` | redeploy with `make deploy-all-local` |
+| AgentIdentityRegistry | `0xAc1E8054945A73744014c4f257e49AD45E10d17F` | redeploy | redeploy |
+| ReputationRegistry | `0xEE7029AAAaFdB8108e2fACC8F0cd2704266Ee2E7` | redeploy | redeploy |
+| ValidationRegistry | `0x1348E3B74C1E2b09fa44d86f7d1Aad78179Cf09f` | redeploy | redeploy |
 | tUSD8 | `0x456569838f1d43009A91ebA4263147Afd7233483` | same | MockUSD8 |
+
+Aevum deployment block: `3383476`. Set `NEXT_PUBLIC_DEPLOY_BLOCK_AEVUM=3383476` so the Activity page only scans from this block. Live UI: https://agentic-payment-guard.vercel.app/
 
 ## Environment variables
 

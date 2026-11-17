@@ -30,11 +30,13 @@ make deploy-all-aevum ACCOUNT=aevum-deployer
 
 | 合约 | Aevum 测试网 | Fork (440050) | Local (31337) |
 |---|---|---|---|
-| PaymentGuard | `TBD` | `TBD` | `TBD` |
-| AgentIdentityRegistry | `TBD` | `TBD` | `TBD` |
-| ReputationRegistry | `TBD` | `TBD` | `TBD` |
-| ValidationRegistry | `TBD` | `TBD` | `TBD` |
+| PaymentGuard | `0xBB8984Cdd7eFa0502E1FEcDEDb2e07b3080436c3` | 用 `make deploy-all-fork` 重新部署 | 用 `make deploy-all-local` 重新部署 |
+| AgentIdentityRegistry | `0xAc1E8054945A73744014c4f257e49AD45E10d17F` | 重新部署 | 重新部署 |
+| ReputationRegistry | `0xEE7029AAAaFdB8108e2fACC8F0cd2704266Ee2E7` | 重新部署 | 重新部署 |
+| ValidationRegistry | `0x1348E3B74C1E2b09fa44d86f7d1Aad78179Cf09f` | 重新部署 | 重新部署 |
 | tUSD8 | `0x456569838f1d43009A91ebA4263147Afd7233483` | 相同 | MockUSD8 |
+
+Aevum 部署区块：`3383476`。设置 `NEXT_PUBLIC_DEPLOY_BLOCK_AEVUM=3383476`，Activity 页面只从该区块开始扫描。线上 Demo：https://agentic-payment-guard.vercel.app/
 
 ## 环境变量
 
