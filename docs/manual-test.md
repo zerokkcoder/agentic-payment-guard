@@ -22,6 +22,29 @@ Add the network in your wallet first. The site also offers a `Switch network` bu
 
 ---
 
+## 0. Why `/activity` and `/approvals` look empty (read this first)
+
+This is the most common question. Both pages only react to **payment events**. Depositing, registering or revoking a key on `/policies` does **not** create a payment event.
+
+- `/activity` now shows **every** PaymentGuard event: deposits, key registration/revocation, allowlist changes, payments, approvals and rejections. If you used `/policies`, you will see `Deposit`, `Key registered`, `Key revoked` rows.
+- `/approvals` only shows `ApprovalRequired` events. These are emitted **only when a real payment with `amount > approvalThreshold` is submitted**. Filling in `/policies` alone will never populate it.
+
+### Produce the first approval row from the browser (no CLI)
+
+1. Open `/policies` and connect the OWNER wallet.
+2. Set **Session key** to the connected wallet's own address; put an address you control in the allowlist; set the approval threshold **below** the amount you plan to pay (e.g. `2.5`). Click **Deposit & register**.
+3. Open `/agent`, in the **Browser payment** card:
+   - Recipient: the address you just allowlisted;
+   - Amount: a value **above** the threshold (e.g. `3` > `2.5`);
+   - Click **Send payment** and confirm in the wallet.
+4. Because the amount is above the threshold, an `ApprovalRequired` event is emitted and `/approvals` immediately shows a `Pending` row. Approve it from the **same OWNER wallet** on `/approvals`.
+5. `/activity` will then show deposit, registration, approval-required and executed rows together.
+
+> If `/agent` shows `Active: no`, your connected wallet is not a registered session key — go back to step 2 and register this exact address.
+> A blocked payment is still a successful on-chain transaction: `/activity` shows `PaymentBlocked` with a plain-language reason (e.g. "recipient not allowlisted" or "exceeds per-tx cap").
+
+---
+
 ## A. Read-only checks
 
 ### A1. Home page
@@ -70,24 +93,25 @@ Add the network in your wallet first. The site also offers a `Switch network` bu
 - Seven scenarios listed in English and Chinese: `allowed`, `approval`, `cap`, `notallowlisted`, `dailycap`, `revoked`, `expired`.
 - An `ERC-8004 身份 / Agent identity` section explaining the self-deployment.
 
-### A5. Empty approval queue
+### A5. Approval queue
 
 **Steps**: Open `/approvals`.
 
 **Expected**
 
 - Title `审批队列 / Approval queue`.
-- `暂无审批请求 / No requests yet.` if no `approval` scenario has run.
+- `暂无审批请求 / No requests yet.` if nobody has submitted a payment above the threshold yet (expected — see section 0).
+- A `Pending` row appears once the browser payment from section 0 is submitted.
 - `刷新 / Refresh` works.
 
-### A6. Empty activity feed
+### A6. Activity feed
 
 **Steps**: Open `/activity`.
 
 **Expected**
 
 - Title `链上活动 / On-chain activity`.
-- `No guard events yet. Run npm --prefix agent run demo.` when empty.
+- Because the live deployment already has deposits and key registrations, `Deposit`, `Key registered`, `Key revoked` and `Allowlist` rows are visible.
 - No `Set NEXT_PUBLIC_GUARD_...` configuration warning.
 
 ### A7. Verification page tolerance
@@ -181,7 +205,8 @@ Open home, `/policies` and `/activity` at 375px width. Navigation must not overf
 | Symptom | Meaning |
 |---|---|
 | `/api/quote` 405 | Expected; POST only. |
-| `No guard events yet` | Expected until `agent run demo` runs locally. |
+| `/approvals` stays empty | Expected. Only payments above the threshold create rows; use the `/agent` browser payment as in section 0. |
+| `/activity` has no payment rows | Check whether `Deposit`/`Key registered` rows exist. If so, the payment was blocked (`PaymentBlocked` with a plain-language reason), e.g. recipient not allowlisted or per-tx cap exceeded. |
 | Home still shows `Checkout contract not set` | Vercel is serving an old build; Redeploy. |
 | Registry JSON still shows `TBD` | Same; Redeploy and recheck. |
 | Transaction stuck pending | Check tQDAY balance and Aevum RPC status; do not resubmit blindly. |

@@ -22,6 +22,29 @@
 
 ---
 
+## 0. 为什么 `/activity` 和 `/approvals` 没有数据（先读这一节）
+
+这是最常见的问题。原因是这两页只看**付款类事件**，而只在 `/policies` 存钱、注册、撤销**不会产生付款事件**。
+
+- `/activity` 现在显示**全部 PaymentGuard 事件**：存款、密钥注册/撤销、白名单变更、付款、审批、拒绝。如果你在 `/policies` 操作过，就会看到 `存入资金`、`注册密钥`、`撤销密钥` 等记录。
+- `/approvals` 只显示 `ApprovalRequired` 事件。它**只在真正发起一笔「金额 > 审批阈值」的付款时产生**。单纯填写 `/policies` 永远不会让它有数据。
+
+### 用浏览器产生第一条审批记录（无需 CLI）
+
+1. 打开 `/policies`，连接 OWNER 钱包。
+2. 把「Session key」填成**当前连接的钱包地址**；收款白名单填一个你能控制地址；审批阈值填比你要付的金额小的数（例如 `2.5`）。点击「存入并注册」。
+3. 打开 `/agent`，在「浏览器付款」卡片里：
+   - Recipient 填刚才加入白名单的地址；
+   - Amount 填一个**大于阈值**的数（例如 `3` > `2.5`）；
+   - 点击「发起付款」，钱包确认。
+4. 因为金额高于阈值，交易会发出 `ApprovalRequired`，`/approvals` 立刻出现一条 `Pending`。回到 `/approvals` 用**同一个 OWNER 钱包**点「批准」。
+5. `/activity` 会同时出现存款、注册、待审批、已执行四条记录。
+
+> 若 `/agent` 显示 `Active: no`，说明当前钱包不是已注册的 session key，回到第 2 步用这个地址重新注册。
+> 付款被拦时，`/activity` 里会显示 `PaymentBlocked` 及白话原因（如「收款人不在白名单」「超过单笔上限」），这同样是成功的链上交易。
+
+---
+
 ## A. 只读验收（不花钱）
 
 ### A1. 首页检查项
@@ -77,24 +100,25 @@
 - 列出 7 个场景：`allowed`、`approval`、`cap`、`notallowlisted`、`dailycap`、`revoked`、`expired`，每个都有中英文说明。
 - 有 `ERC-8004 身份 / Agent identity` 区块，说明为何自部署。
 
-### A5. 审批队列空态
+### A5. 审批队列
 
 **步骤**：打开 `/approvals`。
 
 **预期**
 
 - 标题 `审批队列 / Approval queue`。
-- 若本地从未跑过 `approval` 场景，显示 `暂无审批请求 / No requests yet.`。
-- 右上角 `刷新 / Refresh` 按钮可点击，点击后状态不变或更新。
+- 若从未有人发起过高额付款，显示 `暂无审批请求 / No requests yet.`（这是正常的，见第 0 节）。
+- 一旦按第 0 节发起高额付款，这里会出现 `Pending` 记录。
+- 右上角 `刷新 / Refresh` 按钮可点击。
 
-### A6. 活动流水空态
+### A6. 活动流水
 
 **步骤**：打开 `/activity`。
 
 **预期**
 
 - 标题 `链上活动 / On-chain activity`。
-- 若无演示交易，显示 `No guard events yet. Run npm --prefix agent run demo.`。
+- 线上已有人在 `/policies` 存钱和注册密钥，因此应能看到 `存入资金`、`注册密钥`、`撤销密钥`、`白名单变更` 等记录（全部来自链上事件）。
 - 不应出现 `Set NEXT_PUBLIC_GUARD_...` 的未配置提示。
 
 ### A7. 付款验证页容错
@@ -224,7 +248,8 @@
 | 现象 | 判断 |
 |---|---|
 | `/api/quote` 返回 405 | 正常，该接口只接受 POST。 |
-| 页面显示 `No guard events yet` | 正常，先跑本地 `agent run demo` 才会产生事件。 |
+| `/approvals` 一直空 | 正常。只有金额 > 审批阈值的付款才产生记录；按第 0 节用 `/agent` 浏览器付款发起一笔。 |
+| `/activity` 没有付款记录 | 先看有没有 `存入资金`/`注册密钥`；有的话说明密钥被撤销或收款人未白名单，付款被拦为 `PaymentBlocked`（仍在流水里）。 |
 | 首页仍是 `Checkout contract not set` | Vercel 还在服务旧构建，去 Deployments 手动 Redeploy。 |
 | 注册 JSON 仍是 `TBD` | 同上，Redeploy 后复查。 |
 | 交易一直 pending | 检查 tQDAY 余额和 Aevum RPC 状态；不要重复提交。 |

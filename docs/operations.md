@@ -137,6 +137,18 @@ pnpm --filter web build && pnpm dev
 
 Blocked scenarios are successful transactions that emit an event instead of reverting, so their hashes are valid and the reason decodes in the explorer. `demo-output.txt` is the evidence for the video and submission.
 
+### 4.1 Generate payment and approval data from the browser (no CLI)
+
+The live `/activity` now shows **all** PaymentGuard events (deposits, registration, revocation, allowlist, payments, approvals). `/approvals` only lists payments above the threshold. Filling in `/policies` alone never creates an approval — you must actually submit a payment:
+
+1. `/policies`: connect the OWNER wallet; set **Session key** to the connected wallet's own address; put an address you control in the allowlist; set the approval threshold to `2.5`; click **Deposit & register**.
+2. `/agent`: in the **Browser payment** card set Recipient to the allowlisted address and Amount to `3` (> 2.5), then click **Send payment** and confirm.
+3. Since `3 > 2.5`, an `ApprovalRequired` event is emitted and `/approvals` shows a `Pending` row. Approve it from the same OWNER wallet.
+4. `/activity` then shows deposit, registration, approval-required and executed rows; `/verify/<paymentId>` shows the receipt.
+
+> If `/agent` shows `Active: no`, this address is not a registered session key — go back to step 1 and register this exact address.
+> Browser payment relies on the server-side `QUOTE_SIGNER_PRIVATE_KEY` (`/api/quote`), which must match the deployed `quoteSigner`; otherwise you get `PaymentBlocked(11)` (invalid quote signature).
+
 ## 5. Vercel
 
 The live site is https://agentic-payment-guard.vercel.app/

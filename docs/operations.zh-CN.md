@@ -141,6 +141,18 @@ pnpm --filter web build && pnpm dev
 
 被拦截场景是成功的链上交易，只是发了事件而不是 revert，所以 tx hash 有效、原因可在浏览器解码。`demo-output.txt` 是视频和提交材料要用的证据。
 
+### 4.1 只用浏览器产生付款和审批数据（不跑 CLI）
+
+线上 `/activity` 现在显示**全部** PaymentGuard 事件（存款、注册、撤销、白名单、付款、审批）。`/approvals` 只显示金额高于阈值的付款。只填 `/policies` 不会产生审批记录——必须真的发起一笔付款：
+
+1. `/policies`：连接 OWNER 钱包；「Session key」填**当前连接钱包自己的地址**；白名单填一个你能控制的地址；审批阈值填 `2.5`；点「存入并注册」。
+2. `/agent`：「浏览器付款」卡片里，Recipient 填刚加入白名单的地址，Amount 填 `3`（> 2.5），点「发起付款」并确认。
+3. 因为 `3 > 2.5`，链上发出 `ApprovalRequired`，`/approvals` 出现 `Pending`。用同一个 OWNER 钱包点「批准」。
+4. `/activity` 立即出现存款、注册、待审批、已执行四条记录；`/verify/<paymentId>` 可查看回执。
+
+> 若 `/agent` 提示 `Active: no`，说明当前地址不是已注册 session key——回到第 1 步用这个地址重新注册。
+> 浏览器付款依赖服务端的 `QUOTE_SIGNER_PRIVATE_KEY`（`/api/quote`），它必须与部署时的 `quoteSigner` 是同一个地址，否则会得到 `PaymentBlocked(11)` 报价签名无效。
+
 ## 5. 线上 Vercel
 
 线上站点已经存在：https://agentic-payment-guard.vercel.app/

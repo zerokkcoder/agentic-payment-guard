@@ -40,7 +40,10 @@ export async function POST(request: Request) {
       functionName: "quoteDigest",
       args: [recipient as Address, value, deadline, paymentId as Hex],
     });
-    const signature = await privateKeyToAccount(key).signMessage({ message: { raw: digest } });
+    // PaymentGuard verifies ECDSA.recover(digest, sig) on the raw EIP-712 digest.
+    // Sign the hash directly — signMessage({raw}) adds an EIP-191 prefix and
+    // would make every quote fail on-chain with BLOCK_BAD_QUOTE.
+    const signature = await privateKeyToAccount(key).sign({ hash: digest });
     return NextResponse.json({ signature, digest, recipient, amount, validBefore, paymentId });
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 });

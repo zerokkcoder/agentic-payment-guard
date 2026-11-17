@@ -1,4 +1,4 @@
-import type { AbiEvent, Address, GetLogsReturnType, PublicClient } from "viem";
+import type { AbiEvent, Address, GetLogsReturnType, Log, PublicClient } from "viem";
 import { MAX_LOG_RANGE } from "./chain";
 
 export interface ChunkedLogsArgs<E extends AbiEvent> {
@@ -33,4 +33,24 @@ export async function getLogsChunked<E extends AbiEvent>(
     onProgress?.(stop - fromBlock + 1n, total);
   }
   return out as GetLogsReturnType<E>;
+}
+
+/**
+ * Read every log an address emitted over a range, in ≤1,000-block chunks.
+ * Unlike getLogsChunked this does not filter by event topic, so a single pass
+ * returns the whole audit trail (payments AND vault/key lifecycle events).
+ */
+export async function getAllLogsChunked(
+  client: PublicClient,
+  { address, fromBlock, toBlock, step = MAX_LOG_RANGE }: Omit<ChunkedLogsArgs<AbiEvent>, "event" | "args" | "onProgress">,
+): Promise<Log[]> {
+  if (step < 1n || step > MAX_LOG_RANGE) throw new Error(`step must be between 1 and ${MAX_LOG_RANGE}`);
+  const end = toBlock ?? (await client.getBlockNumber());
+  const out: Log[] = [];
+  for (let start = fromBlock; start <= end; start += step) {
+    const stop = start + step - 1n > end ? end : start + step - 1n;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    out.push(...await client.getLogs({ address, fromBlock: start, toBlock: stop } as any));
+  }
+  return out;
 }

@@ -20,7 +20,10 @@ async function quoteSignature(recipient: Address, amount: bigint, validBefore: b
       functionName: "quoteDigest",
       args: [recipient, amount, validBefore, paymentId],
     });
-    return privateKeyToAccount(env.quoteKey).signMessage({ message: { raw: digest } });
+    // The contract verifies ECDSA.recover(digest, sig) on the raw EIP-712 digest,
+    // so sign the hash directly. signMessage({raw}) would add the EIP-191 prefix
+    // and every payment would be blocked with BLOCK_BAD_QUOTE.
+    return privateKeyToAccount(env.quoteKey).sign({ hash: digest });
   }
   if (!env.quoteApiUrl) throw new Error("Set QUOTE_SIGNER_PRIVATE_KEY or QUOTE_API_URL");
   const res = await fetch(env.quoteApiUrl, {
