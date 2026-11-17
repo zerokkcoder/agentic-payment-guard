@@ -126,5 +126,7 @@ Every scenario prints a `paymentId`, a tx hash and an explorer URL. See [docs/ag
 - [Demo script 演示脚本](./docs/demo.md) · [中文](./docs/demo.zh-CN.md)
 - [Deployment 部署](./docs/deployment.md) · [中文](./docs/deployment.zh-CN.md)
 - [Integration 平台集成](./docs/integration.md) · [中文](./docs/integration.zh-CN.md)
+- [Operations guide 操作手册](./docs/operations.md) · [中文](./docs/operations.zh-CN.md)
+- [Live manual test 线上手工测试](./docs/manual-test.md) · [中文](./docs/manual-test.zh-CN.md)
 
 MIT licensed. Based on the official [Aevum Starter Kit](https://github.com/qday-io/aevum-starter-kit); see [NOTICE.md](./NOTICE.md).

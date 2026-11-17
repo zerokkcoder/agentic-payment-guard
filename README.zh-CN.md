@@ -124,5 +124,7 @@ npm --prefix agent run -- pay 1
 - [演示脚本](./docs/demo.zh-CN.md) · [English](./docs/demo.md)
 - [部署](./docs/deployment.zh-CN.md) · [English](./docs/deployment.md)
 - [平台集成](./docs/integration.zh-CN.md) · [English](./docs/integration.md)
+- [操作手册](./docs/operations.zh-CN.md) · [English](./docs/operations.md)
+- [线上手工测试](./docs/manual-test.zh-CN.md) · [English](./docs/manual-test.md)
 
 MIT 许可。基于官方 [Aevum Starter Kit](https://github.com/qday-io/aevum-starter-kit)，见 [NOTICE.md](./NOTICE.md)。
