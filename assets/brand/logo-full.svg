@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" width="1200" height="400" role="img" aria-label="Agentic Payment Guard wordmark">
+  <title>Agentic Payment Guard</title>
+  <defs>
+    <linearGradient id="shield" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3730a3"/>
+      <stop offset="0.55" stop-color="#25268a"/>
+      <stop offset="1" stop-color="#161a5c"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#67e8f9"/>
+      <stop offset="0.5" stop-color="#22d3ee"/>
+      <stop offset="1" stop-color="#0891b2"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5eead4"/>
+      <stop offset="1" stop-color="#0d9488"/>
+    </linearGradient>
+    <linearGradient id="wordmark" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#e0e7ff"/>
+      <stop offset="1" stop-color="#a5b4fc"/>
+    </linearGradient>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="7" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Logo mark, scaled into left 300px -->
+  <g transform="translate(20,20) scale(0.703)">
+    <path d="M256 44 L416 108 L416 244 C416 342 348 422 256 470 C164 422 96 342 96 244 L96 108 Z"
+          fill="url(#shield)" stroke="#4f46e5" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M256 66 L398 123 L398 244 C398 330 337 404 256 447 C175 404 114 330 114 244 L114 123 Z"
+          fill="none" stroke="#818cf8" stroke-width="2" stroke-opacity="0.35" stroke-linejoin="round"/>
+    <rect x="241" y="244" width="30" height="186" rx="15" fill="url(#cyan)"/>
+    <rect x="256" y="360" width="44" height="15" rx="7.5" fill="url(#cyan)"/>
+    <rect x="256" y="388" width="32" height="15" rx="7.5" fill="url(#cyan)"/>
+    <circle cx="256" cy="188" r="76" fill="#141650" fill-opacity="0.55" stroke="url(#cyan)" stroke-width="14" filter="url(#glow)"/>
+    <g stroke="url(#teal)" stroke-width="4" stroke-linecap="round" opacity="0.95">
+      <line x1="256" y1="188" x2="256" y2="132"/>
+      <line x1="256" y1="188" x2="256" y2="244"/>
+      <line x1="256" y1="188" x2="200" y2="188"/>
+      <line x1="256" y1="188" x2="312" y2="188"/>
+    </g>
+    <g fill="url(#teal)">
+      <circle cx="256" cy="132" r="11"/>
+      <circle cx="256" cy="244" r="11"/>
+      <circle cx="200" cy="188" r="11"/>
+      <circle cx="312" cy="188" r="11"/>
+    </g>
+    <circle cx="256" cy="188" r="17" fill="url(#cyan)" filter="url(#glow)"/>
+    <circle cx="372" cy="330" r="25" fill="#0f766e" stroke="#5eead4" stroke-width="3"/>
+    <path d="M361 330 l8 8 l15 -17" fill="none" stroke="#ecfeff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="372" y="185" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="88" font-weight="700" letter-spacing="-2" fill="url(#wordmark)">Agentic</text>
+  <text x="372" y="278" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="88" font-weight="700" letter-spacing="-2" fill="#22d3ee">Payment Guard</text>
+  <text x="376" y="330" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="24" font-weight="500" letter-spacing="4" fill="#94a3b8">SCOPED ON-CHAIN PAYMENTS FOR AI AGENTS</text>
+</svg>

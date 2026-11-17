@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="./assets/brand/banner.png" alt="Agentic Payment Guard" width="900">
+</div>
+
 # Agentic Payment Guard
 
 [中文版 README](./README.zh-CN.md)
