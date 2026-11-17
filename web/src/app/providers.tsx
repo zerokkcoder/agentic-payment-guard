@@ -14,7 +14,7 @@ const theme = darkTheme({ accentColor: "#0257FF", borderRadius: "medium" });
 function RainbowKit({ children }: { children: ReactNode }) {
   const { net } = useNetwork();
   return (
-    <RainbowKitProvider initialChain={net.chain} locale="en-US" theme={theme} appInfo={{ appName: "Aevum Starter Kit" }}>
+    <RainbowKitProvider initialChain={net.chain} locale="en-US" theme={theme} appInfo={{ appName: "Agentic Payment Guard" }}>
       {children}
     </RainbowKitProvider>
   );

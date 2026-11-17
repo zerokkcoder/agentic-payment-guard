@@ -1,0 +1,25 @@
+{
+  "name": "agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "init": "tsx src/index.ts init",
+    "status": "tsx src/index.ts status",
+    "setup": "tsx src/index.ts setup",
+    "demo": "tsx src/index.ts demo"
+  },
+  "dependencies": {
+    "@aevum-kit/aevum": "workspace:*",
+    "dotenv": "16.6.1",
+    "viem": "2.57.12"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "4.20.5",
+    "typescript": "5.9.3"
+  }
+}

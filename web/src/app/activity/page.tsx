@@ -1,148 +1,93 @@
 "use client";
 
-import { checkoutAbi, getLogsChunked, txUrl } from "@aevum-kit/aevum";
+import { guardAbi, getLogsChunked, txUrl } from "@aevum-kit/aevum";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useState } from "react";
 import { formatUnits, getAbiItem, type PublicClient } from "viem";
-import { useAccount, usePublicClient } from "wagmi";
-import { useToken } from "@/components/useToken";
+import { usePublicClient } from "wagmi";
 import { useNetwork } from "@/lib/network";
-import { orderLabel, short } from "@/lib/order";
+import { explainBlockReason } from "@/lib/decodeError";
+import { short } from "@/components/ExploreLink";
 
-const WINDOWS = [
-  { blocks: 1_000n, label: "Last 1k blocks" },
-  { blocks: 5_000n, label: "Last 5k blocks" },
-  { blocks: 20_000n, label: "Last 20k blocks" },
-];
+const executed = getAbiItem({ abi: guardAbi, name: "PaymentExecuted" });
+const blocked = getAbiItem({ abi: guardAbi, name: "PaymentBlocked" });
+const approval = getAbiItem({ abi: guardAbi, name: "ApprovalRequired" });
+
+interface Item {
+  kind: "executed" | "blocked" | "approval";
+  id: string;
+  key: string;
+  recipient: string;
+  amount: bigint;
+  reason?: number;
+  block: bigint;
+  tx: `0x${string}`;
+}
 
 export default function ActivityPage() {
   const { net } = useNetwork();
-  const appChain = net.chain;
-  const checkoutAddress = net.checkout;
-  const deployBlock = net.deployBlock;
-  const hasExplorer = net.hasExplorer;
-  const client = usePublicClient({ chainId: appChain.id }) as PublicClient | undefined;
-  const { address } = useAccount();
-  const token = useToken();
-  const [windowSize, setWindowSize] = useState(5_000n);
-  const [onlyMine, setOnlyMine] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const guard = net.guard;
+  const client = usePublicClient({ chainId: net.chain.id }) as PublicClient | undefined;
 
   const logs = useQuery({
-    queryKey: ["paid-logs", appChain.id, checkoutAddress, windowSize.toString(), onlyMine ? address : null],
-    enabled: Boolean(client && checkoutAddress),
+    queryKey: ["guard-activity", net.chain.id, guard, net.deployBlock?.toString()],
+    enabled: Boolean(client && guard),
     queryFn: async () => {
       const head = await client!.getBlockNumber();
-      let from = head > windowSize ? head - windowSize + 1n : 0n;
-      if (deployBlock !== undefined && deployBlock > from) from = deployBlock;
-      setProgress(0);
-      const result = await getLogsChunked(client!, {
-        address: checkoutAddress!,
-        event: getAbiItem({ abi: checkoutAbi, name: "Paid" }),
-        args: onlyMine && address ? { payer: address } : undefined,
-        fromBlock: from,
-        toBlock: head,
-        onProgress: (done, total) => setProgress(total ? Number((done * 100n) / total) : 100),
-      });
-      return { from, head, items: [...result].reverse() };
+      const from = net.deployBlock ?? (head > 5000n ? head - 5000n : 0n);
+      const common = { address: guard!, fromBlock: from, toBlock: head };
+      const [ok, no, ap] = await Promise.all([
+        getLogsChunked(client!, { ...common, event: executed }),
+        getLogsChunked(client!, { ...common, event: blocked }),
+        getLogsChunked(client!, { ...common, event: approval }),
+      ]);
+      const items: Item[] = [
+        ...ok.map((l) => ({ kind: "executed" as const, id: l.args.paymentId!, key: l.args.sessionKey!, recipient: l.args.recipient!, amount: l.args.amount!, block: l.blockNumber, tx: l.transactionHash })),
+        ...no.map((l) => ({ kind: "blocked" as const, id: l.args.paymentId!, key: l.args.sessionKey!, recipient: l.args.recipient!, amount: l.args.amount!, reason: Number(l.args.reason), block: l.blockNumber, tx: l.transactionHash })),
+        ...ap.map((l) => ({ kind: "approval" as const, id: l.args.paymentId!, key: l.args.sessionKey!, recipient: l.args.recipient!, amount: l.args.amount!, block: l.blockNumber, tx: l.transactionHash })),
+      ];
+      return { from, head, items: items.sort((a, b) => (a.block < b.block ? 1 : -1)) };
     },
   });
 
-  const total = logs.data?.items.reduce((sum, l) => sum + (l.args.amount ?? 0n), 0n) ?? 0n;
+  const labels = { executed: "已执行 / Executed", blocked: "已拦截 / Blocked", approval: "待审批 / Pending" };
 
   return (
     <main className="shell">
       <div className="page-head">
         <div>
-          <p className="eyebrow">Example · reading events</p>
-          <h1>Payment activity</h1>
-          <p className="lede">
-            Every <code>Paid</code> event from your Checkout. Aevum serves at most 1,000 blocks per <code>eth_getLogs</code> call, so the kit
-            reads in chunks.
-          </p>
+          <p className="eyebrow">Verifiable audit trail · 可验证审计轨迹</p>
+          <h1>链上活动 / On-chain activity</h1>
+          <p className="lede">每一笔 AI 付款，包括被拦截的，都有链上事件。/ Every AI payment, including blocked ones, has an on-chain event.</p>
         </div>
-        {logs.data && (
-          <div className="score">
-            <span className="score-num">{logs.data.items.length}</span>
-            <span className="fine">
-              payments · {formatUnits(total, token.decimals)} {token.symbol}
-            </span>
-          </div>
-        )}
+        {logs.data && <div className="score"><span className="score-num">{logs.data.items.length}</span><span className="fine">events</span></div>}
       </div>
 
-      {!checkoutAddress ? (
-        <div className="card empty">
-          No Checkout configured for {net.label}. Set <code>NEXT_PUBLIC_CHECKOUT_{net.key.toUpperCase()}</code> in <code>web/.env.local</code>.
-        </div>
+      {!guard ? (
+        <div className="card empty">Set <code>NEXT_PUBLIC_GUARD_{net.key.toUpperCase()}</code> in <code>web/.env.local</code>.</div>
       ) : (
         <section className="card flush">
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center", padding: "16px 20px", borderBottom: "1px solid var(--line)" }}>
-            {WINDOWS.map((w) => (
-              <button
-                key={w.label}
-                type="button"
-                className={`btn small ${windowSize === w.blocks ? "" : "secondary"}`}
-                aria-pressed={windowSize === w.blocks}
-                onClick={() => setWindowSize(w.blocks)}
-              >
-                {w.label}
-              </button>
-            ))}
-            <label style={{ display: "inline-flex", gap: 8, alignItems: "center", marginLeft: "auto", fontSize: 14, color: "var(--text-muted)" }}>
-              <input type="checkbox" checked={onlyMine} disabled={!address} onChange={(e) => setOnlyMine(e.target.checked)} />
-              Only my payments
-            </label>
-          </div>
-
-          {logs.isFetching && (
-            <div style={{ padding: "16px 20px" }} aria-live="polite">
-              <div className="progress" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
-                <span style={{ width: `${progress}%` }} />
-              </div>
-              <p className="fine" style={{ marginTop: 8 }}>
-                Scanning {windowSize.toLocaleString("en-US")} blocks, 1,000 at a time… {progress}%
-              </p>
-            </div>
-          )}
-
           {logs.error && <p className="empty">Couldn&apos;t read events: {(logs.error as Error).message}</p>}
-
-          {logs.data && logs.data.items.length === 0 && !logs.isFetching && (
-            <p className="empty">
-              No payments in blocks {logs.data.from.toString()}–{logs.data.head.toString()}. <Link href="/checkout">Make one</Link>.
-            </p>
-          )}
-
+          {logs.data && logs.data.items.length === 0 && !logs.isFetching && <p className="empty">No guard events yet. Run <code>npm --prefix agent run demo</code>.</p>}
           {logs.data && logs.data.items.length > 0 && (
             <div className="table-wrap">
               <table className="data">
-                <thead>
-                  <tr>
-                    <th>Order</th>
-                    <th>Payer</th>
-                    <th className="right">Amount</th>
-                    <th className="right">Block</th>
-                    <th>Links</th>
-                  </tr>
-                </thead>
+                <thead><tr><th>Result</th><th>Agent key</th><th>Recipient</th><th className="right">Amount</th><th className="right">Block</th><th>Links</th></tr></thead>
                 <tbody>
                   {logs.data.items.map((l) => (
-                    <tr key={`${l.transactionHash}-${l.logIndex}`}>
-                      <td className="mono">{l.args.orderId ? orderLabel(l.args.orderId) : "—"}</td>
-                      <td className="mono">{short(l.args.payer ?? "")}</td>
-                      <td className="right num">
-                        {formatUnits(l.args.amount ?? 0n, token.decimals)} {token.symbol}
+                    <tr key={`${l.tx}-${l.id}-${l.kind}`}>
+                      <td>
+                        <span className={`chip ${l.kind === "executed" ? "ok" : l.kind === "blocked" ? "bad" : "warn"}`} />
+                        {labels[l.kind]}
+                        {l.kind === "blocked" && <div className="fine">{explainBlockReason(l.reason)}</div>}
                       </td>
-                      <td className="right num">{l.blockNumber?.toString()}</td>
+                      <td className="mono">{short(l.key)}</td>
+                      <td className="mono">{short(l.recipient)}</td>
+                      <td className="right num">{formatUnits(l.amount, 6)} tUSD8</td>
+                      <td className="right num">{l.block.toString()}</td>
                       <td style={{ display: "flex", gap: 14 }}>
-                        <Link href={`/receipts/${l.args.orderId}?tx=${l.transactionHash}&chain=${appChain.id}`}>Receipt</Link>
-                        {hasExplorer && l.transactionHash && (
-                          <a href={txUrl(l.transactionHash)} target="_blank" rel="noreferrer">
-                            Tx
-                          </a>
-                        )}
+                        <Link href={`/verify/${l.id}`}>Receipt</Link>
+                        {net.hasExplorer && <a href={txUrl(l.tx)} target="_blank" rel="noreferrer">Tx ↗</a>}
                       </td>
                     </tr>
                   ))}

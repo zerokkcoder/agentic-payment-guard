@@ -1,0 +1,27 @@
+{
+  "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
+  "name": "Agentic Payment Guard Agent",
+  "description": "An autonomous payment agent operating under human-defined tUSD8 spending limits on QDay Aevum testnet. 中文：在人类设定的 tUSD8 支出边界内自主付款的 AI 代理，运行于 QDay Aevum 测试网。",
+  "image": "https://raw.githubusercontent.com/zerokkcoder/agentic-payment-guard/main/docs/registry/agent.png",
+  "services": [
+    {
+      "name": "web",
+      "endpoint": "https://agentic-payment-guard.vercel.app/",
+      "version": "1.0.0"
+    },
+    {
+      "name": "MCP",
+      "endpoint": "https://agentic-payment-guard.vercel.app/api/quote",
+      "version": "1.0.0"
+    }
+  ],
+  "x402Support": false,
+  "active": true,
+  "registrations": [
+    {
+      "agentId": 1,
+      "agentRegistry": "eip155:44005:TBD"
+    }
+  ],
+  "supportedTrust": ["reputation", "validation"]
+}

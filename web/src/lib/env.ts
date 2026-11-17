@@ -10,6 +10,11 @@ export interface Network {
   chain: Chain;
   /** Your Checkout on this network, if you deployed one. */
   checkout?: Address;
+  /** Agentic Payment Guard stack. */
+  guard?: Address;
+  identity?: Address;
+  reputation?: Address;
+  validation?: Address;
   /** Only scan events from this block onward on the Activity page. */
   deployBlock?: bigint;
   /** Explorer links only make sense on the real testnet. */
@@ -26,6 +31,10 @@ const all: Record<NetworkKey, Network> = {
     label: "Aevum testnet",
     chain: aevumTestnet,
     checkout: address(process.env.NEXT_PUBLIC_CHECKOUT_AEVUM),
+    guard: address(process.env.NEXT_PUBLIC_GUARD_AEVUM),
+    identity: address(process.env.NEXT_PUBLIC_IDENTITY_AEVUM),
+    reputation: address(process.env.NEXT_PUBLIC_REPUTATION_AEVUM),
+    validation: address(process.env.NEXT_PUBLIC_VALIDATION_AEVUM),
     deployBlock: block(process.env.NEXT_PUBLIC_DEPLOY_BLOCK_AEVUM),
     hasExplorer: true,
   },
@@ -34,6 +43,10 @@ const all: Record<NetworkKey, Network> = {
     label: "Local fork",
     chain: aevumFork,
     checkout: address(process.env.NEXT_PUBLIC_CHECKOUT_FORK),
+    guard: address(process.env.NEXT_PUBLIC_GUARD_FORK),
+    identity: address(process.env.NEXT_PUBLIC_IDENTITY_FORK),
+    reputation: address(process.env.NEXT_PUBLIC_REPUTATION_FORK),
+    validation: address(process.env.NEXT_PUBLIC_VALIDATION_FORK),
     deployBlock: block(process.env.NEXT_PUBLIC_DEPLOY_BLOCK_FORK),
     hasExplorer: false,
   },
@@ -42,6 +55,10 @@ const all: Record<NetworkKey, Network> = {
     label: "Local anvil",
     chain: localAnvil,
     checkout: address(process.env.NEXT_PUBLIC_CHECKOUT_LOCAL),
+    guard: address(process.env.NEXT_PUBLIC_GUARD_LOCAL),
+    identity: address(process.env.NEXT_PUBLIC_IDENTITY_LOCAL),
+    reputation: address(process.env.NEXT_PUBLIC_REPUTATION_LOCAL),
+    validation: address(process.env.NEXT_PUBLIC_VALIDATION_LOCAL),
     deployBlock: undefined,
     hasExplorer: false,
   },
