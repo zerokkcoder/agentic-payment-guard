@@ -24,6 +24,16 @@ export interface Network {
 const address = (v: string | undefined): Address | undefined => (v && isAddress(v.trim()) ? (v.trim() as Address) : undefined);
 const block = (v: string | undefined): bigint | undefined => (v && /^\d+$/.test(v.trim()) ? BigInt(v.trim()) : undefined);
 
+// Public demo defaults. Env vars still win, but the live Aevum UI must work
+// even when a Vercel import missed one of the NEXT_PUBLIC_* variables.
+const LIVE_AEVUM = {
+  guard: "0xBB8984Cdd7eFa0502E1FEcDEDb2e07b3080436c3" as Address,
+  identity: "0xAc1E8054945A73744014c4f257e49AD45E10d17F" as Address,
+  reputation: "0xEE7029AAAaFdB8108e2fACC8F0cd2704266Ee2E7" as Address,
+  validation: "0x1348E3B74C1E2b09fa44d86f7d1Aad78179Cf09f" as Address,
+  deployBlock: 3383476n,
+};
+
 // NEXT_PUBLIC_* values must be written out in full so Next.js can inline them into the browser bundle.
 const all: Record<NetworkKey, Network> = {
   aevum: {
@@ -31,11 +41,11 @@ const all: Record<NetworkKey, Network> = {
     label: "Aevum testnet",
     chain: aevumTestnet,
     checkout: address(process.env.NEXT_PUBLIC_CHECKOUT_AEVUM),
-    guard: address(process.env.NEXT_PUBLIC_GUARD_AEVUM),
-    identity: address(process.env.NEXT_PUBLIC_IDENTITY_AEVUM),
-    reputation: address(process.env.NEXT_PUBLIC_REPUTATION_AEVUM),
-    validation: address(process.env.NEXT_PUBLIC_VALIDATION_AEVUM),
-    deployBlock: block(process.env.NEXT_PUBLIC_DEPLOY_BLOCK_AEVUM),
+    guard: address(process.env.NEXT_PUBLIC_GUARD_AEVUM) ?? LIVE_AEVUM.guard,
+    identity: address(process.env.NEXT_PUBLIC_IDENTITY_AEVUM) ?? LIVE_AEVUM.identity,
+    reputation: address(process.env.NEXT_PUBLIC_REPUTATION_AEVUM) ?? LIVE_AEVUM.reputation,
+    validation: address(process.env.NEXT_PUBLIC_VALIDATION_AEVUM) ?? LIVE_AEVUM.validation,
+    deployBlock: block(process.env.NEXT_PUBLIC_DEPLOY_BLOCK_AEVUM) ?? LIVE_AEVUM.deployBlock,
     hasExplorer: true,
   },
   fork: {
@@ -89,4 +99,4 @@ export function networkByKey(key: string | null | undefined): Network | undefine
 export const walletConnectProjectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID || undefined;
 
 /** Where the "Source" links and the clone command on the Docs page point. Override it for a fork or a preview deploy. */
-export const repoUrl = (process.env.NEXT_PUBLIC_REPO_URL?.trim() || "https://github.com/qday-io/aevum-starter-kit").replace(/\.git$|\/+$/g, "");
+export const repoUrl = (process.env.NEXT_PUBLIC_REPO_URL?.trim() || "https://github.com/zerokkcoder/agentic-payment-guard").replace(/\.git$|\/+$/g, "");
