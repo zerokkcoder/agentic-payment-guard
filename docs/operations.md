@@ -131,7 +131,7 @@ pnpm --filter web build && pnpm dev
 | `cap` | pay 5 | `PaymentBlocked(5)`, per-tx cap |
 | `notallowlisted` | pay 1 to `0x...dEaD` | `PaymentBlocked(4)` |
 | `approval` | pay 3 | `ApprovalRequired` → owner approves → `PaymentExecuted` |
-| `dailycap` | pay 4 then 1 | first succeeds, second `PaymentBlocked(6)` |
+| `dailycap` | pay 2 then 1 | first succeeds (daily total reaches 6), second `PaymentBlocked(6)` |
 | `revoked` | revoke key #2, pay 1 | `PaymentBlocked(3)` |
 | `expired` | force-expire key #3, pay 1 | `PaymentBlocked(2)` |
 

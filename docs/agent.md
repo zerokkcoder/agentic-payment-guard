@@ -52,7 +52,7 @@ Demo setup uses `perTxCap = 4`, `dailyCap = 8`, `approvalThreshold = 2.5`, `vaul
 | `cap` | pay 5 | `PaymentBlocked(5)` per-tx cap |
 | `notallowlisted` | pay 1 to 0x…dEaD | `PaymentBlocked(4)` |
 | `approval` | pay 3 | `ApprovalRequired`; CLI then calls `approve` with owner key → `PaymentExecuted` |
-| `dailycap` | pay 4, then pay 1 | first executes, second `PaymentBlocked(6)` (daily total reaches 8) |
+| `dailycap` | pay 2, then pay 1 | first executes (daily total reaches 6), second `PaymentBlocked(6)` |
 | `revoked` | revoke key #2, pay 1 | `PaymentBlocked(3)` |
 | `expired` | force-expire key #3, pay 1 | `PaymentBlocked(2)` |
 

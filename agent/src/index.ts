@@ -120,13 +120,13 @@ async function setup() {
   for (const k of keys) {
     const hash = await client.writeContract({
       address: env.guard, abi: guardAbi, functionName: "registerSessionKey",
-      args: [k.session, env.agentId, parseUnits("4", 6), parseUnits("8", 6), parseUnits("2.5", 6), expiresAt, [env.merchant]],
+      args: [k.session, env.agentId, parseUnits("4", 6), parseUnits("6", 6), parseUnits("2.5", 6), expiresAt, [env.merchant]],
       chain, type: "legacy",
     });
     await publicClient.waitForTransactionReceipt({ hash });
     log({ action: "registerSessionKey", label: k.label, session: k.session, txHash: hash, explorer: txLink(hash) });
   }
-  log({ owner: account.address, vault: "20 tUSD8", perTxCap: "4 tUSD8", dailyCap: "8 tUSD8", approvalThreshold: "2.5 tUSD8" });
+  log({ owner: account.address, vault: "20 tUSD8", perTxCap: "4 tUSD8", dailyCap: "6 tUSD8", approvalThreshold: "2.5 tUSD8" });
 }
 
 async function init() {
@@ -169,7 +169,9 @@ async function scenario(name: string) {
     case "notallowlisted":
       return payFrom(env.agentKey, DEAD_ADDRESS, "1", "recipient-blocked");
     case "dailycap": {
-      await payFrom(env.agentKey, env.merchant, "4", "dailycap-spend");
+      // First payment stays at or under the 2.5 approval threshold so it settles
+      // and counts toward the daily cap; the second one then trips the 6 cap.
+      await payFrom(env.agentKey, env.merchant, "2", "dailycap-spend");
       return payFrom(env.agentKey, env.merchant, "1", "dailycap-blocked");
     }
     case "revoked": {

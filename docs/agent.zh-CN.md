@@ -52,7 +52,7 @@ npm --prefix agent run init
 | `cap` | 付 5 | `PaymentBlocked(5)` 单笔超限 |
 | `notallowlisted` | 向 0x…dEaD 付 1 | `PaymentBlocked(4)` |
 | `approval` | 付 3 | `ApprovalRequired`；CLI 随后用 owner key 调 `approve` → `PaymentExecuted` |
-| `dailycap` | 付 4，再付 1 | 第一笔成功，第二笔 `PaymentBlocked(6)`（当日累计达到 8） |
+| `dailycap` | 先付 2，再付 1 | 第一笔成功（当日累计达到 6），第二笔 `PaymentBlocked(6)` |
 | `revoked` | 撤销密钥 #2，付 1 | `PaymentBlocked(3)` |
 | `expired` | 强制过期密钥 #3，付 1 | `PaymentBlocked(2)` |
 

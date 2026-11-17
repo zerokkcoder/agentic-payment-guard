@@ -16,7 +16,7 @@ export default function PoliciesPage() {
   const [sessionKey, setSessionKey] = useState("");
   const [recipient, setRecipient] = useState("");
   const [perTx, setPerTx] = useState("4");
-  const [daily, setDaily] = useState("8");
+  const [daily, setDaily] = useState("6");
   const [threshold, setThreshold] = useState("2.5");
   const [deposit, setDeposit] = useState("20");
   const [hours, setHours] = useState("4");

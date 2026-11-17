@@ -10,6 +10,9 @@
     "init": "tsx src/index.ts init",
     "status": "tsx src/index.ts status",
     "setup": "tsx src/index.ts setup",
+    "pay": "tsx src/index.ts pay",
+    "approve": "tsx src/index.ts approve",
+    "scenario": "tsx src/index.ts scenario",
     "demo": "tsx src/index.ts demo"
   },
   "dependencies": {

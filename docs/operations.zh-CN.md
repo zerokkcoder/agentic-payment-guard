@@ -135,7 +135,7 @@ pnpm --filter web build && pnpm dev
 | `cap` | 付 5 | `PaymentBlocked(5)` 单笔超限 |
 | `notallowlisted` | 向 `0x...dEaD` 付 1 | `PaymentBlocked(4)` |
 | `approval` | 付 3 | `ApprovalRequired` → owner 批准 → `PaymentExecuted` |
-| `dailycap` | 付 4，再付 1 | 第一笔成功，第二笔 `PaymentBlocked(6)` |
+| `dailycap` | 先付 2，再付 1 | 第一笔成功（当日累计到 6），第二笔 `PaymentBlocked(6)` |
 | `revoked` | 撤销 key #2 后付 1 | `PaymentBlocked(3)` |
 | `expired` | 强制过期 key #3 后付 1 | `PaymentBlocked(2)` |
 
