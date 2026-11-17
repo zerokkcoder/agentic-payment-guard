@@ -58,7 +58,7 @@ make deploy-all-aevum ACCOUNT=aevum-deployer
 
 ## Vercel
 
-导入仓库，设置 **Root Directory = `web`**，填入上述变量后部署。必须连接整个仓库：`web` 通过 pnpm workspace 引用 `packages/aevum`，Vercel 需要根目录的 `pnpm-lock.yaml`。README 中有一键部署按钮，把 `YOUR_USER` 换成你的 GitHub 用户名。
+导入仓库，设置 **Root Directory = `web`**，填入上述变量后部署。必须连接整个仓库：`web` 通过 pnpm workspace 引用 `packages/aevum`，Vercel 需要根目录的 `pnpm-lock.yaml`。README 中的一键部署按钮已指向 `zerokkcoder/agentic-payment-guard`；如果你 fork 了仓库，把链接里的 `repository-url` 改成你的 fork。
 
 ## 验证器限制
 
@@ -68,6 +68,19 @@ Aevum 的 Blockscout 验证器暂不可用，`forge verify-contract` 会失败�
 forge verify-contract <address> src/PaymentGuard.sol:PaymentGuard --chain-id 44005 \
   --verifier blockscout --verifier-url https://explorer-test.qday.info/api/
 ```
+
+## 代理环境：Foundry 无法直连 RPC
+
+某些网络环境里 PowerShell / Node 能访问 `https://rpc-test.qday.info`，但 Foundry 的 Rust HTTP 客户端因 TLS 中间代理而失败。此时开一个本地 HTTP→HTTPS 桥接（只转发 JSON-RPC，不涉及私钥）：
+
+```bash
+make rpc-proxy                 # 终端 1：127.0.0.1:8546 -> Aevum RPC
+make test-fork AEVUM_RPC=http://127.0.0.1:8546
+# 如需在那台机器上部署，同样把 AEVUM_RPC 覆盖为桥接地址：
+make deploy-all-aevum AEVUM_RPC=http://127.0.0.1:8546 ACCOUNT=aevum-deployer
+```
+
+桥接的实现见 `tools/rpc-proxy.mjs`；用 `PORT` / `UPSTREAM_RPC` 可改端口和上游。
 
 ## 排障
 

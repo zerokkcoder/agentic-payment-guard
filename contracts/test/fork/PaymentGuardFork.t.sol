@@ -16,8 +16,18 @@ contract PaymentGuardForkTest is Test {
 
     function setUp() public {
         require(block.chainid == 44005 || TUSD8.code.length > 0, "run against an Aevum fork");
-        vm.prank(TUSD8_MM);
-        IERC20(TUSD8).transfer(address(this), 10e6);
+        // The master minter is not prefunded on the fork: give it a minting
+        // allowance and mint test tokens, exactly like `make deal` does.
+        vm.startPrank(TUSD8_MM);
+        (bool configured, ) = TUSD8.call(
+            abi.encodeWithSignature("configureMinter(address,uint256)", TUSD8_MM, 100e6)
+        );
+        require(configured, "configureMinter failed");
+        (bool minted, ) = TUSD8.call(
+            abi.encodeWithSignature("mint(address,uint256)", address(this), 10e6)
+        );
+        require(minted, "mint failed");
+        vm.stopPrank();
     }
 
     function testRealTusd8Payment() public {

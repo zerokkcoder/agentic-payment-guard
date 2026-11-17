@@ -58,7 +58,7 @@ See [agent.md](./agent.md#environment-variables). Never commit either `.env` fil
 
 ## Vercel
 
-Import the repo, set **Root Directory = `web`**, add the variables above, deploy. The whole repo must remain connected because `web` imports `packages/aevum` through the pnpm workspace and Vercel reads `pnpm-lock.yaml` at the root. The README contains a one-click deploy button; replace `YOUR_USER` with your GitHub username.
+Import the repo, set **Root Directory = `web`**, add the variables above, deploy. The whole repo must remain connected because `web` imports `packages/aevum` through the pnpm workspace and Vercel reads `pnpm-lock.yaml` at the root. The README's one-click deploy button already points at `zerokkcoder/agentic-payment-guard`; if you fork it, change the `repository-url` query parameter to your fork.
 
 ## Verification caveat
 
@@ -69,10 +69,23 @@ forge verify-contract <address> src/PaymentGuard.sol:PaymentGuard --chain-id 440
   --verifier blockscout --verifier-url https://explorer-test.qday.info/api/
 ```
 
+## Foundry behind a TLS proxy
+
+In some networks PowerShell / Node can reach `https://rpc-test.qday.info` but Foundry's Rust HTTP client cannot, because of a TLS-intercepting proxy. Start a local HTTP→HTTPS JSON-RPC bridge (it forwards payloads only, never keys):
+
+```bash
+make rpc-proxy                 # terminal 1: 127.0.0.1:8546 -> Aevum RPC
+make test-fork AEVUM_RPC=http://127.0.0.1:8546
+# To deploy from that machine, override AEVUM_RPC the same way:
+make deploy-all-aevum AEVUM_RPC=http://127.0.0.1:8546 ACCOUNT=aevum-deployer
+```
+
+The bridge is `tools/rpc-proxy.mjs`; `PORT` and `UPSTREAM_RPC` can override its endpoint.
+
 ## Troubleshooting
 
 - `invalid opcode` → compiled for Cancun. Keep `evm_version = "shanghai"` and run `make build`.
 - `eth_getLogs` range error → use `getLogsChunked`, max 1,000 blocks.
 - No WebSocket → poll over HTTPS.
-- Fork tests fail behind a proxy → Foundry needs direct HTTPS access to the RPC; use a direct network or run unit tests only.
+- Fork tests fail behind a proxy → use `make rpc-proxy` above.
 - Relayer drained → keep only a little tQDAY and replace in-memory limits with Redis for real traffic.

@@ -16,8 +16,9 @@ ANVIL_0     := 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
 AMOUNT      ?= 100
 # `make fork` runs under its own chain ID so wallets and signatures never mix it up with the real testnet.
 FORK_CHAIN  := 440050
+RPC_BRIDGE_PORT ?= 8546
 
-.PHONY: help install build test test-fork check anvil fork deploy-local deploy-fork deploy-aevum deploy-all-local deploy-all-fork deploy-all-aevum mint deal dev
+.PHONY: help install build test test-fork check anvil fork rpc-proxy deploy-local deploy-fork deploy-aevum deploy-all-local deploy-all-fork deploy-all-aevum mint deal dev
 
 help: ## Show this list
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  \033[36mmake %-14s\033[0m %s\n", $$1, $$2}'
@@ -44,6 +45,9 @@ anvil: ## Empty local chain (31337) with Aevum's EVM rules
 
 fork: ## Local copy of Aevum testnet on 127.0.0.1:8555 (chain 440050)
 	anvil --fork-url $(AEVUM_RPC) --hardfork shanghai --chain-id $(FORK_CHAIN) --port $(FORK_PORT)
+
+rpc-proxy: ## Plain-HTTP JSON-RPC bridge (127.0.0.1:8546) for Foundry behind a TLS proxy
+	PORT=$(RPC_BRIDGE_PORT) node tools/rpc-proxy.mjs
 
 deploy-local: ## Deploy MockUSD8 + Checkout to `make anvil`
 	cd contracts && forge script script/Deploy.s.sol --rpc-url $(LOCAL_RPC) --broadcast --unlocked --sender $(ANVIL_0)

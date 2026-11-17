@@ -46,7 +46,7 @@ flowchart LR
 Requirements: Node 22+, pnpm, Foundry.
 
 ```bash
-git clone --recursive <YOUR_REPO_URL>.git
+git clone --recursive https://github.com/zerokkcoder/agentic-payment-guard.git
 cd agentic-payment-guard
 make install
 make build && make test          # 32 unit tests, no network needed
@@ -68,7 +68,7 @@ npm --prefix agent run setup
 npm --prefix agent run demo
 ```
 
-`make check` additionally runs fork tests against the live Aevum RPC. It needs a direct (non-proxied) connection to `https://rpc-test.qday.info`.
+`make check` additionally runs fork tests against the live Aevum RPC. Behind a TLS proxy, run `make rpc-proxy` first and pass `AEVUM_RPC=http://127.0.0.1:8546`. See [docs/deployment.md](./docs/deployment.md).
 
 ## Deploy to Aevum testnet
 
@@ -85,7 +85,7 @@ Copy the printed addresses into `web/.env.local` and `agent/.env`. See [docs/dep
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fzerokkcoder%2Fagentic-payment-guard&root-directory=web&project-name=agentic-payment-guard&repository-name=agentic-payment-guard&env=NEXT_PUBLIC_NETWORKS,NEXT_PUBLIC_GUARD_AEVUM,NEXT_PUBLIC_IDENTITY_AEVUM,TRUSTED_IP_HEADER&envDefaults=%7B%22NEXT_PUBLIC_NETWORKS%22%3A%22aevum%22%2C%22TRUSTED_IP_HEADER%22%3A%22x-vercel-forwarded-for%22%7D&envDescription=Guard%20and%20registry%20addresses%20printed%20by%20make%20deploy-all-aevum&envLink=https%3A%2F%2Fgithub.com%2Fzerokkcoder%2Fagentic-payment-guard%23deploy-to-aevum-testnet)
 
-Replace `zerokkcoder` with your GitHub username after creating the public repository. Keep the whole repo connected: Vercel needs `pnpm-lock.yaml` and the pnpm workspace at the root, with **Root Directory = `web`**.
+The button is already pointed at this repository. Keep the whole repo connected: Vercel needs `pnpm-lock.yaml` and the pnpm workspace at the root, with **Root Directory = `web`**.
 
 ## Agent CLI
 

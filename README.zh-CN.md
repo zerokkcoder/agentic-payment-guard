@@ -44,7 +44,7 @@ flowchart LR
 需要 Node 22+、pnpm、Foundry。
 
 ```bash
-git clone --recursive <YOUR_REPO_URL>.git
+git clone --recursive https://github.com/zerokkcoder/agentic-payment-guard.git
 cd agentic-payment-guard
 make install
 make build && make test          # 32 个单元测试，无需网络
@@ -66,7 +66,7 @@ npm --prefix agent run setup
 npm --prefix agent run demo
 ```
 
-`make check` 还会在真实 Aevum RPC 上跑 fork 测试，需要能直连 `https://rpc-test.qday.info`（不走代理）。
+`make check` 还会在真实 Aevum RPC 上跑 fork 测试。在 TLS 代理环境下先运行 `make rpc-proxy`，并传入 `AEVUM_RPC=http://127.0.0.1:8546`。见 [docs/deployment.zh-CN.md](./docs/deployment.zh-CN.md)。
 
 ## 部署到 Aevum 测试网
 
@@ -83,7 +83,7 @@ QUOTE_SIGNER=<第二个测试私钥对应的地址> make deploy-all-aevum ACCOUN
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fzerokkcoder%2Fagentic-payment-guard&root-directory=web&project-name=agentic-payment-guard&repository-name=agentic-payment-guard&env=NEXT_PUBLIC_NETWORKS,NEXT_PUBLIC_GUARD_AEVUM,NEXT_PUBLIC_IDENTITY_AEVUM,TRUSTED_IP_HEADER&envDefaults=%7B%22NEXT_PUBLIC_NETWORKS%22%3A%22aevum%22%2C%22TRUSTED_IP_HEADER%22%3A%22x-vercel-forwarded-for%22%7D)
 
-创建公开仓库后把链接中的 `zerokkcoder` 换成你的 GitHub 用户名。Vercel 必须连接整个仓库（Root Directory = `web`），因为应用通过 pnpm workspace 引用 `packages/aevum`。
+按钮已指向本仓库。Vercel 必须连接整个仓库（Root Directory = `web`），因为应用通过 pnpm workspace 引用 `packages/aevum`。
 
 ## Agent CLI
 
